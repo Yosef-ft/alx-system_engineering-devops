@@ -1,0 +1,177 @@
+# Secured and Monitored Web Infrastructure
+
+## Diagram URL
+https://drive.google.com/file/d/1YBoHc20ryIbMCcBri02hl_Rwsk23MN9G/view?usp=sharing
+
+## Additional Security and Monitoring Elements
+
+### Why Adding Each Element
+
+#### 3 Firewalls
+**Why added**: To create multiple layers of security protection and control network traffic at different points in the infrastructure.
+
+**Firewall Placement**:
+1. **Perimeter Firewall**: Protects the entire infrastructure from external threats
+2. **Load Balancer Firewall**: Controls traffic between internet and load balancer
+3. **Server-level Firewalls**: Protect individual servers from unauthorized access
+
+#### SSL Certificate for HTTPS
+**Why added**: To encrypt all communication between users and the website, ensuring data privacy and security.
+
+#### 3 Monitoring Clients
+**Why added**: To collect performance metrics, logs, and health data from each server for proactive monitoring and troubleshooting.
+
+## Security Components Explanation
+
+### What are Firewalls For
+
+**Purpose of Firewalls**:
+- **Traffic filtering**: Block malicious or unauthorized network traffic
+- **Access control**: Define what traffic is allowed in/out of network segments
+- **Attack prevention**: Protect against DDoS, port scanning, and intrusion attempts
+- **Network segmentation**: Isolate different parts of infrastructure
+- **Logging**: Record network activity for security analysis
+
+**Types of Protection**:
+- **Stateful inspection**: Track connection states and block invalid packets
+- **Application-layer filtering**: Inspect HTTP/HTTPS traffic content
+- **Rate limiting**: Prevent traffic flooding and abuse
+- **Geo-blocking**: Block traffic from specific countries/regions
+
+### Why Traffic is Served Over HTTPS
+
+**Security Benefits**:
+- **Encryption**: Data transmitted between browser and server is encrypted
+- **Authentication**: Verifies the server's identity to prevent man-in-the-middle attacks
+- **Data integrity**: Ensures data hasn't been tampered with during transmission
+- **Privacy**: Protects user credentials, personal information, and browsing behavior
+
+**Additional Benefits**:
+- **SEO advantage**: Search engines favor HTTPS websites
+- **User trust**: Modern browsers show security warnings for HTTP sites
+- **Compliance**: Required for PCI DSS and other security standards
+- **Modern features**: Many web APIs require HTTPS to function
+
+## Monitoring Infrastructure
+
+### What Monitoring is Used For
+
+**Performance Monitoring**:
+- **Server health**: CPU, memory, disk usage, and network performance
+- **Application performance**: Response times, error rates, and throughput
+- **Database performance**: Query execution times and connection pools
+- **User experience**: Page load times and availability
+
+**Security Monitoring**:
+- **Intrusion detection**: Identify unauthorized access attempts
+- **Log analysis**: Detect suspicious patterns and security events
+- **Compliance**: Meet regulatory requirements for logging and monitoring
+
+**Operational Benefits**:
+- **Proactive alerts**: Notify administrators before issues affect users
+- **Capacity planning**: Understand resource usage trends
+- **Troubleshooting**: Historical data helps diagnose problems
+- **SLA monitoring**: Track uptime and performance commitments
+
+### How Monitoring Tool Collects Data
+
+**Data Collection Methods**:
+1. **Agent-based**: Monitoring clients installed on each server
+2. **Log shipping**: Send application and system logs to monitoring platform
+3. **Metrics APIs**: Collect performance metrics via HTTP endpoints
+
+**Data Collection Process**:
+1. **Monitoring clients** collect metrics, logs, and events locally
+2. **Secure transmission** sends data to monitoring service.
+3. **Data processing** at monitoring platform for analysis and alerting
+4. **Dashboard visualization** and alert notifications to administrators
+
+### Monitoring Web Server QPS (Queries Per Second)
+
+**To monitor web server QPS**:
+
+1. **Configure Nginx logging**:
+   - Enable access logs with timestamp information
+   - Use structured log format (JSON) for easier parsing
+
+2. **Set up log parsing**:
+   - Configure monitoring client to parse Nginx access logs
+   - Extract request timestamps and count requests per second
+
+3. **Create metrics**:
+   - Set up custom metrics in monitoring platform
+   - Calculate QPS from log data (requests/time_period)
+
+4. **Configure dashboards**:
+   - Create real-time QPS graphs
+   - Set up alerts for QPS thresholds (too high or too low)
+
+5. **Alternative methods**:
+   - Use Nginx stub_status module for real-time metrics
+   - Implement application-level counters
+   - Use reverse proxy metrics from load balancer
+
+## Infrastructure Issues
+
+### SSL Termination at Load Balancer Level
+
+**Why this is an issue**:
+
+1. **Unencrypted internal traffic**: Communication between load balancer and backend servers is not encrypted
+2. **Security vulnerability**: Internal network traffic can be intercepted
+3. **Compliance issues**: Some regulations require end-to-end encryption
+4. **Trust boundary**: Backend servers cannot verify client certificates
+
+
+**Better alternatives**:
+- **SSL pass-through**: Let backend servers handle SSL termination
+- **End-to-end encryption**: Encrypt traffic between all components
+- **SSL bridging**: Terminate and re-encrypt at load balancer
+
+### Single MySQL Server for Writes
+
+**Why this is an issue**:
+
+1. **Single Point of Failure**: If the primary database fails, no write operations possible
+2. **Write bottleneck**: All write operations limited to one server's capacity
+3. **No write scalability**: Cannot distribute write load across multiple servers
+4. **Maintenance downtime**: Updates require taking the write server offline
+5. **Data loss risk**: If primary fails before replication, recent writes may be lost
+
+**Better solutions**:
+- **Multi-master replication**: Multiple servers can accept writes
+- **Database clustering**: Distributed database with automatic failover
+- **Database sharding**: Distribute writes across multiple database instances
+
+### Servers with All Same Components
+
+**Why this might be a problem**:
+
+1. **Resource inefficiency**: Each server needs resources for all components
+2. **Scaling limitations**: Cannot scale individual components independently
+3. **Maintenance complexity**: Updates affect multiple services simultaneously
+4. **Single point of failure per server**: If one component fails, entire server is affected
+5. **Performance conflicts**: Different components compete for same resources
+
+**Better architecture approaches**:
+- **Microservices**: Separate components into dedicated services
+- **Horizontal scaling**: Scale individual components based on demand
+- **Specialized servers**: Dedicated database servers, application servers, etc.
+- **Container orchestration**: Use Docker/Kubernetes for component isolation
+
+## Security Best Practices Implemented
+
+### Network Security
+- **Multiple firewall layers** for defense in depth
+- **Network segmentation** between different tiers
+- **Access control lists** to restrict unnecessary communication
+
+### Data Protection
+- **HTTPS encryption** for all client communication
+- **SSL certificates** from trusted Certificate Authority
+- **Secure protocols** for all network communication
+
+### Monitoring and Compliance
+- **Comprehensive logging** of all system activities
+- **Real-time monitoring** for security events
+- **Audit trails** for compliance requirements 

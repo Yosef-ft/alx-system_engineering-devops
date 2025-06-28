@@ -1,0 +1,102 @@
+# Distributed Web Infrastructure
+
+## Diagram URL
+https://drive.google.com/file/d/119ve2rjhaGfXtDmToa72RUamXgmXcDhX/view?usp=sharing
+
+## Infrastructure Components
+
+#### Load Balancer (HAproxy)
+**Why added**: To distribute incoming requests across multiple servers, preventing any single server from being overwhelmed and providing redundancy. It acts as a single entry point that routes traffic to healthy backend servers.
+
+#### Additional Servers (2 more servers)
+**Why added**: To eliminate the single point of failure from the previous design and provide redundancy. Multiple servers can handle more traffic and ensure the website remains available even if one server fails.
+
+#### Separate Web Server (Nginx)
+**Why added**: To have a dedicated server for handling static content and acting as a reverse proxy, improving performance and allowing for better resource allocation.
+
+#### Separate Application Server
+**Why added**: To isolate application logic processing from web serving, allowing for better scalability and maintenance. Each server can be optimized for its specific role.
+
+#### Database Primary-Replica Setup
+**Why added**: To provide data redundancy, improve read performance, and ensure data availability in case the primary database fails.
+
+## Load Balancer Configuration
+
+### Distribution Algorithm
+The load balancer is configured with a **Round Robin** algorithm.
+
+**How it works**:
+- Requests are distributed sequentially to each server in rotation
+- Server 1 gets request 1, Server 2 gets request 2, Server 3 gets request 3, then back to Server 1
+- Simple and ensures even distribution when all servers have similar capacity
+- No consideration for server load or response time
+
+### Active-Active vs Active-Passive Setup
+
+**This setup enables Active-Active configuration**:
+
+**Active-Active**:
+- All servers actively handle requests simultaneously
+- Load balancer distributes traffic across all available servers
+- Better resource utilization and performance
+- If one server fails, others continue serving traffic
+
+**Active-Passive**:
+- Only one server (active) handles requests at a time
+- Other servers (passive) remain on standby
+- Passive servers activate only when active server fails
+- Simpler to manage but wastes resources
+- Provides redundancy but not improved performance
+
+## Database Primary-Replica Cluster
+
+### How it works
+1. **Primary node** receives all write operations (INSERT, UPDATE, DELETE)
+2. **Primary node** logs all changes to a binary log
+3. **Replica node** connects to primary and requests the binary log
+4. **Replica node** applies the same changes to maintain data consistency
+5. **Replication** can be synchronous or asynchronous
+
+### Primary vs Replica Node Differences
+
+#### Primary Node (Master)
+- **Application interaction**: Handles all write operations from the application
+- **Read operations**: Can handle read operations (but typically reserved for writes)
+- **Data authority**: Source of truth for all data
+- **Responsibility**: Maintains the authoritative copy of the database
+
+#### Replica Node (Slave)
+- **Application interaction**: Handles read-only operations from the application
+- **Write operations**: Cannot accept write operations directly
+- **Data source**: Receives data from the primary node
+- **Responsibility**: Provides read scalability and backup functionality
+
+## Infrastructure Issues
+
+### Single Points of Failure (SPOF)
+
+1. **Load Balancer**: If HAproxy fails, the entire website becomes unreachable
+2. **Primary Database**: If the primary database fails, no write operations can be performed
+3. **Network Connection**: Single internet connection point
+4. **Application Files**: If application files are corrupted on all servers simultaneously
+
+### Security Issues
+
+#### No Firewall
+- **Problem**: All servers are exposed to direct internet access
+- **Risk**: Vulnerable to attacks, unauthorized access, and malicious traffic
+- **Impact**: Potential data breaches and service disruption
+
+#### No HTTPS
+- **Problem**: All communication is unencrypted (HTTP only)
+- **Risk**: Data transmitted between users and servers can be intercepted
+- **Impact**: User credentials, personal data, and sensitive information are vulnerable
+
+### No Monitoring
+
+#### Issues with lack of monitoring
+- **No visibility**: Cannot detect performance issues, server failures, or unusual traffic
+- **Reactive approach**: Problems are discovered only after users report issues
+- **No metrics**: Cannot track response times, error rates, or resource utilization
+- **No alerting**: System administrators are not notified of failures
+- **Difficult troubleshooting**: No historical data to analyze problems

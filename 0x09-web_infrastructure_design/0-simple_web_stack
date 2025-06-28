@@ -1,0 +1,59 @@
+# Simple Web Stack
+
+## Diagram URL
+https://drive.google.com/file/d/1IiP3v3lCotXMSEPU5V0FMlIOnKQgUxj_/view?usp=sharing
+
+## Infrastructure Components Explanation
+
+### What is a server?
+A server is a computer (physical or virtual) located in a data center that runs an operating system and provides services to other computers over a network.
+
+### Role of the domain name
+The domain name (foobar.com) serves as a human-readable address that users can remember and type instead of memorizing IP addresses. It acts as an alias for the server's IP address.
+
+### DNS Record Type for www
+The "www" in www.foobar.com is an A record (Address record) because it directly resolves to an IP address (8.8.8.8).
+
+### Role of the web server (Nginx)
+The web server's role is to:
+- Handle HTTP/HTTPS requests from users
+- Serve static content (HTML, CSS, JavaScript, images)
+- Act as the first point of contact for incoming requests
+- Can forward dynamic requests to the application server
+
+### Role of the application server
+The application server's role is to:
+- Process business logic and dynamic content
+- Execute the application code
+- Generate dynamic responses based on user requests
+- Communicate with the database when needed
+
+### Role of the database (MySQL)
+The database's role is to:
+- Store and manage application data persistently
+- Handle data queries and transactions
+- Maintain data integrity and relationships
+- Provide data to the application server when requested
+
+### Server-User Communication Protocol
+The server communicates with the user's computer using the TCP/IP protocol stack over the internet, specifically using HTTP/HTTPS protocols for web traffic.
+
+## Infrastructure Issues
+
+### Single Point of Failure (SPOF)
+This infrastructure has a single point of failure because:
+- Only one server hosts everything
+- If the server goes down, the entire website becomes unavailable
+- No redundancy or backup systems
+
+### Downtime During Maintenance
+The website experiences downtime when:
+- Deploying new code requires restarting the web server
+- Database maintenance requires taking the system offline
+
+### Cannot Scale
+This infrastructure cannot handle increased traffic because:
+- Single server has limited CPU, memory, and bandwidth
+- No load balancing to distribute requests
+- Cannot add more servers to handle traffic spikes
+- Database becomes a bottleneck under heavy load
