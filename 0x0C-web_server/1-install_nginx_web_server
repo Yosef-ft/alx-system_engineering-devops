@@ -4,7 +4,5 @@
 apt update -y
 apt install nginx -y
 echo "Hello World!" > /var/www/html/index.nginx-debian.html
-
-sed -i 's/^listen [0-9]*;/listen 80;/' /etc/nginx/sites-enabled/default
-
-nginx
+ufw allow 'Nginx HTTP'
+service nginx start
