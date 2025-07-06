@@ -2,7 +2,7 @@
 # Transfer file to server
 
 if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <file_path> <server_ip> <username> <ssh_private_key_path>"
+    echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
     exit 1
 fi
 
@@ -11,4 +11,4 @@ SERVER_IP="$2"
 USERNAME="$3"
 PRIVATE_KEY="$4"
 
-scp -i "$PRIVATE_KEY" "$SOURCE_FILE" "$USERNAME@$SERVER_IP:~"
+scp -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "$SOURCE_FILE" "$USERNAME@$SERVER_IP:~/"
