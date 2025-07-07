@@ -5,8 +5,28 @@ sudo apt update
 sudo apt install nginx -y
 echo "Hello World!" | sudo tee /var/www/html/index.html
 
-sed -i '/^.*location \/ {/,/^.*}/ a\
-\    location /redirect_me {\n\        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\    }
-' /etc/nginx/sites-available/default
+sudo tee /etc/nginx/sites-available/default > /dev/null <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html;
+
+    server_name _;
+
+    location = /redirect_me {
+        return 301 https://www.youtube.com;
+    }
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+
 
 sudo service nginx restart
