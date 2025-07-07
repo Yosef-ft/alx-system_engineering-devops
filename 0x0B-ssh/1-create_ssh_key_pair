@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 # Creating ssh key pair 
+mkdir -p ~/.ssh
+cd ~/.ssh || exit 1
+
+# Generate new RSA key
 ssh-keygen -b 4096 -f school -t rsa -N betty -q
